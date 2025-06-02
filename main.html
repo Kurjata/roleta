@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roleta da Sorte</title>
+  <style>
+    :root {
+      --size: 420px; /* tamanho total da roleta */
+      --btn-size: 120px;
+      --transition-time: 4s;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #f5f7fa;
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: var(--size);
+      height: var(--size);
+    }
+
+    #wheel {
+      position: relative; /* necessário para posicionar números */
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 8px solid #333;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      background: conic-gradient(
+        #ff6b6b 0deg 72deg,
+        #4ecdc4 72deg 144deg,
+        #ffe66d 144deg 216deg,
+        #1a96ff 216deg 288deg,
+        #7d5fff 288deg 360deg
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform var(--transition-time) cubic-bezier(0.33, 1, 0.68, 1);
+    }
+
+    /* rótulos de 1‑5 */
+    .label {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ffffff;
+      pointer-events: none; /* evita capturar cliques */
+      transform: rotate(calc(72deg * var(--i))) translate(160px) rotate(calc(-72deg * var(--i)));
+    }
+
+    /* ponteiro no topo */
+    .pointer {
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 24px solid #e63946;
+    }
+
+    #spinBtn {
+      position: absolute;
+      width: var(--btn-size);
+      height: var(--btn-size);
+      border-radius: 50%;
+      background: #e63946; /* vermelho */
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: transform 0.1s;
+    }
+
+    #spinBtn:active {
+      transform: scale(0.95);
+    }
+
+    #result {
+      margin-top: 40px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #333;
+      text-align: center;
+      min-height: 1.6em;
+    }
+  </style>
+</head>
+<body>
+  <div class="wheel-container">
+    <!-- ponteiro -->
+    <div class="pointer"></div>
+
+    <!-- roleta -->
+    <div id="wheel">
+      <!-- números 1‑5 -->
+      <span class="label" style="--i:0">1</span>
+      <span class="label" style="--i:1">2</span>
+      <span class="label" style="--i:2">3</span>
+      <span class="label" style="--i:3">4</span>
+      <span class="label" style="--i:4">5</span>
+
+      <!-- botão central -->
+      <div id="spinBtn">GIRAR</div>
+    </div>
+  </div>
+
+  <p id="result"></p>
+
+  <script>
+    (function () {
+      const phrases = [
+        "💡 Você é brilhante!",
+        "🎉 Hoje é seu dia de sorte!",
+        "🚀 Vá em frente e conquiste!",
+        "🌟 Brilhe forte, estrela!",
+        "🍀 A sorte está com você!"
+      ];
+
+      const wheel = document.getElementById("wheel");
+      const spinBtn = document.getElementById("spinBtn");
+      const result = document.getElementById("result");
+
+      let currentRotation = 0;
+      let isSpinning = false;
+
+      spinBtn.addEventListener("click", () => {
+        if (isSpinning) return; // evita cliques enquanto gira
+        isSpinning = true;
+        result.textContent = "";
+
+        // escolha aleatória de segmento (0–4)
+        const segmentIndex = Math.floor(Math.random() * 5);
+
+        // gira pelo menos 5 voltas completas para dar efeito
+        const extraRotations = 360 * 5;
+
+        // ângulo central do segmento escolhido (36° de offset)
+        const targetRotation = segmentIndex * 72 + 36;
+
+        // calcular nova rotação final
+        currentRotation = (currentRotation + extraRotations + targetRotation) % 360 + extraRotations;
+
+        wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+        // exibir resultado ao fim da animação
+        setTimeout(() => {
+          result.textContent = phrases[segmentIndex];
+          isSpinning = false;
+        }, parseFloat(getComputedStyle(wheel).getPropertyValue("--transition-time")) * 1000);
+      });
+    })();
+  </script>
+</body>
+</html>

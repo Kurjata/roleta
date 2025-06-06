@@ -1,128 +1,122 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gira Cláusulas</title>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gira Cláusulas</title>
 
-  <style>
-    :root{
-      --size:        clamp(260px, 70vmin, 540px);
-      --btn-size:    calc(var(--size) * 0.26);
-      --label-dist:  calc(var(--size) * 0.37);
-      --ptr-w:       calc(var(--size) * 0.05);
-      --ptr-h:       calc(var(--ptr-w) * 1.25);
-      --fire-w:      calc(var(--size) * 0.22);
-      --log-h:       calc(var(--fire-w) * 0.18);
-      --flame-w:     calc(var(--fire-w) * 0.28);
-      --flame-h:     calc(var(--fire-w) * 0.50);
-      --transition-time: 4s;
-    }
+<style>
+  /* ========== VARIÁVEIS ========= */
+  :root{
+    --size:clamp(260px,70vmin,540px);
+    --btn-size:calc(var(--size)*0.26);
+    --label-dist:calc(var(--size)*0.37);
+    --ptr-w:calc(var(--size)*0.05);
+    --ptr-h:calc(var(--ptr-w)*1.25);
+    --fire-w:calc(var(--size)*0.22);
+    --log-h:calc(var(--fire-w)*0.18);
+    --flame-w:calc(var(--fire-w)*0.28);
+    --flame-h:calc(var(--fire-w)*0.50);
+    --transition-time:4s;
+    --green:#28a745;
+    --red:#e63946;
+  }
 
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
-      font-family:Arial,Helvetica,sans-serif;
-      background:radial-gradient(circle at 50% 20%,#1f3c88 0%,#0d1933 60%,#060a16 100%);
-      overflow:hidden;
-    }
+  /* ========== RESET / BASE ========= */
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 50% 20%,#1f3c88 0%,#0d1933 60%,#060a16 100%);
+    overflow:hidden;
+  }
 
-    /* ── HISTÓRICO ────────────────────── */
-    .history-box{
-      position:fixed;top:50%;left:clamp(8px,2vw,16px);transform:translateY(-50%);
-      width:clamp(190px,30vw,320px);max-height:80vh;
-      padding:clamp(10px,2vw,18px);
-      background:#ffffffd0;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.25);
-      overflow-y:auto;z-index:3;
-    }
-    .history-box h3{font-size:clamp(.9rem,2.5vw,1rem);margin-bottom:8px;text-align:center;}
-    .history-box li{font-size:clamp(.8rem,2.3vw,1rem);margin-bottom:8px;font-weight:600;line-height:1.25;}
-    .history-box button{
-      margin-top:10px;width:100%;padding:6px 10px;
-      font-size:clamp(.9rem,2.7vw,1rem);font-weight:600;
-      color:#fff;background:#e63946;border:none;border-radius:6px;
-      cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .1s;
-    }
-    .history-box button:disabled{background:#999;cursor:not-allowed;box-shadow:none;}
-    .history-box button:active:not(:disabled){transform:scale(.96);}
+  /* ========== BOX GENÉRICO ========= */
+  .box{
+    position:fixed;top:50%;transform:translateY(-50%);
+    width:clamp(190px,30vw,320px);max-height:80vh;
+    padding:clamp(10px,2vw,18px);background:#ffffffd0;border-radius:10px;
+    box-shadow:0 4px 12px rgba(0,0,0,.25);overflow-y:auto;z-index:3;
+  }
+  .left {left:clamp(8px,2vw,16px);}
+  .right{right:clamp(8px,2vw,16px);}
+  .box h3{font-size:clamp(.9rem,2.5vw,1rem);margin-bottom:8px;text-align:center;color:#222;}
+  .box ul{padding:0;}
+  .box li{font-size:clamp(.8rem,2.3vw,1rem);margin-bottom:8px;font-weight:600;line-height:1.25;list-style:none;}
 
-    /* ── BANDEIRINHAS ─────────────────── */
-    .flags{position:absolute;top:0;left:0;width:100%;display:flex;justify-content:center;
-      pointer-events:none;transform:translateY(6px);}
-    .flags li{--delay:calc(var(--n)*.12s);
-      width:clamp(28px,6vw,52px);height:clamp(28px,6vw,52px);
-      margin:0 clamp(2px,0.4vw,4px);background:var(--clr);
-      clip-path:polygon(0 0,100% 0,100% 75%,50% 100%,0 75%);
-      transform-origin:top center;
-      animation:sway 3.2s ease-in-out infinite alternate;animation-delay:var(--delay);}
-    @keyframes sway{from{transform:rotate(-6deg);}to{transform:rotate(6deg);}}
+  /* ========== BOTÕES ========= */
+  button{font-family:inherit;border:none;border-radius:6px;font-weight:600;cursor:pointer;
+         box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .12s;}
+  button:active:not(:disabled){transform:scale(.96)}
+  #undoBtn,#gabaritoBtn{margin-top:10px;width:100%;padding:6px 10px;font-size:clamp(.9rem,2.7vw,1rem);color:#fff;}
+  #undoBtn{background:var(--red);} #undoBtn:disabled{background:#999;cursor:not-allowed;box-shadow:none;}
 
-    /* ── ROLETA ───────────────────────── */
-    .wheel-container{position:relative;width:var(--size);height:var(--size);z-index:2;}
-    #wheel{
-      width:100%;height:100%;border-radius:50%;border:clamp(6px,1.2vw,10px) solid #333;
-      box-shadow:0 12px 28px rgba(0,0,0,.25);
-      background:conic-gradient(
-        #ff6b6b 0 36deg,#ffb74d 36deg 72deg,#ffe66d 72deg 108deg,#9acd32 108deg 144deg,
-        #4ecdc4 144deg 180deg,#1a96ff 180deg 216deg,#7d5fff 216deg 252deg,#ff6bcb 252deg 288deg,
-        #ff9ff3 288deg 324deg,#ff4d94 324deg 360deg);
-      display:flex;align-items:center;justify-content:center;
-      transition:transform var(--transition-time) cubic-bezier(.33,1,.68,1);
-    }
-    .label{
-      position:absolute;left:50%;top:50%;
-      font-size:clamp(1rem,5vmin,1.4rem);font-weight:700;color:#fff;pointer-events:none;
-      transform:rotate(calc(36deg*var(--i))) translate(var(--label-dist))
-                rotate(calc(-36deg*var(--i)));
-    }
-    .pointer{
-      position:absolute;top:calc(var(--ptr-h)*-1);left:50%;transform:translateX(-50%);
-      width:0;height:0;border-left:var(--ptr-w) solid transparent;
-      border-right:var(--ptr-w) solid transparent;border-bottom:var(--ptr-h) solid #e63946;
-    }
-    #spinBtn{
-      position:absolute;width:var(--btn-size);height:var(--btn-size);border-radius:50%;
-      background:#e63946;color:#fff;font-size:clamp(.95rem,4.5vmin,1.2rem);font-weight:bold;
-      display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;
-      box-shadow:0 4px 12px rgba(0,0,0,.3);transition:transform .12s;
-    }
-    #spinBtn:active{transform:scale(.94);}
+  #gabaritoBtn{background:#999;}                         /* cinza inativo   */
+  #gabaritoBtn:not(:disabled){background:var(--green);}   /* verde ativo     */
+  #gabaritoBtn:disabled{cursor:not-allowed;box-shadow:none;}
 
-    /* ── FOGUEIRA ─────────────────────── */
-    .bonfire{position:absolute;bottom:clamp(20px,5vh,60px);left:50%;transform:translateX(-50%);
-      width:var(--fire-w);height:calc(var(--fire-w)*1.3);pointer-events:none;z-index:1;}
-    .log{position:absolute;bottom:10px;width:var(--fire-w);height:var(--log-h);
-      background:#5c3d1b;border-radius:12px;box-shadow:inset 0 0 4px rgba(0,0,0,.4);}
-    .log.left{transform:rotate(-25deg);} .log.right{transform:rotate(25deg);}
-    .flame{position:absolute;bottom:calc(var(--log-h) + 6px);left:50%;transform:translateX(-50%);
-      width:var(--flame-w);height:var(--flame-h);
-      background:radial-gradient(circle at 50% 60%,#ffbf00 0%,#ff6600 60%,#cc3300 100%);
-      border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
-      mix-blend-mode:screen;animation:flicker .8s ease-in-out infinite alternate;}
-    .flame:nth-child(3){width:calc(var(--flame-w)*0.7);height:calc(var(--flame-h)*0.7);
-      bottom:calc(var(--log-h) + 10px);animation-duration:.7s;animation-delay:-.4s;}
-    .flame:nth-child(4){width:calc(var(--flame-w)*0.55);height:calc(var(--flame-h)*0.55);
-      bottom:calc(var(--log-h) + 14px);animation-duration:.6s;animation-delay:-.2s;}
-    @keyframes flicker{from{transform:translateX(-50%) scaleY(.9);opacity:.95;}
-                       to  {transform:translateX(-50%) translateY(-6px) scaleY(1.05);opacity:1;}}
+  /* VERDADEIRO/FALSO coloridos */
+  .verdadeiro{color:var(--green);font-weight:700;}
+  .falso     {color:var(--red);font-weight:700;}
 
-    /* ── LANTERNAS ───────────────────── */
-    .lantern{position:absolute;bottom:-100px;
-      width:clamp(24px,4.5vw,40px);height:clamp(36px,6.3vw,56px);border-radius:50% 50% 40% 40%;
-      background:radial-gradient(circle at 50% 30%,#ffb74d 0%,#ff6b00 80%);
-      box-shadow:0 0 clamp(6px,1vw,12px) 4px rgba(255,120,0,.4);
-      animation:floatUp var(--time) linear infinite;left:var(--x);pointer-events:none;}
-    .lantern::after{content:'';position:absolute;bottom:4px;left:50%;
-      width:8px;height:8px;transform:translateX(-50%);background:#fff8aa;border-radius:50%;}
-    @keyframes floatUp{from{transform:translateY(0) scale(.9);opacity:0;}10%{opacity:1;}
-                       to  {transform:translateY(-120vh) scale(1.1);opacity:0;}}
-  </style>
+  /* ========== BANDEIRINHAS ========= */
+  .flags{position:absolute;top:0;left:0;width:100%;display:flex;justify-content:center;pointer-events:none;transform:translateY(6px);}
+  .flags li{--delay:calc(var(--n)*.12s);width:clamp(28px,6vw,52px);height:clamp(28px,6vw,52px);
+    margin:0 clamp(2px,0.4vw,4px);background:var(--clr);clip-path:polygon(0 0,100% 0,100% 75%,50% 100%,0 75%);
+    transform-origin:top center;animation:sway 3.2s ease-in-out infinite alternate;animation-delay:var(--delay);}
+  @keyframes sway{from{transform:rotate(-6deg);}to{transform:rotate(6deg);} }
+
+  /* ========== ROLETA ========= */
+  .wheel-container{position:relative;width:var(--size);height:var(--size);z-index:2;}
+  #wheel{width:100%;height:100%;border-radius:50%;border:clamp(6px,1.2vw,10px) solid #333;
+    box-shadow:0 12px 28px rgba(0,0,0,.25);
+    background:conic-gradient(
+      #ff6b6b 0 36deg,#ffb74d 36deg 72deg,#ffe66d 72deg 108deg,#9acd32 108deg 144deg,
+      #4ecdc4 144deg 180deg,#1a96ff 180deg 216deg,#7d5fff 216deg 252deg,#ff6bcb 252deg 288deg,
+      #ff9ff3 288deg 324deg,#ff4d94 324deg 360deg);
+    display:flex;align-items:center;justify-content:center;
+    transition:transform var(--transition-time) cubic-bezier(.33,1,.68,1);}
+  .label{position:absolute;left:50%;top:50%;font-size:clamp(1rem,5vmin,1.4rem);font-weight:700;color:#fff;
+    transform:rotate(calc(36deg*var(--i))) translate(var(--label-dist)) rotate(calc(-36deg*var(--i)));}
+
+  .pointer{position:absolute;top:calc(var(--ptr-h)*-1);left:50%;transform:translateX(-50%);
+    width:0;height:0;border-left:var(--ptr-w) solid transparent;border-right:var(--ptr-w) solid transparent;
+    border-bottom:var(--ptr-h) solid var(--red);}
+  #spinBtn{position:absolute;width:var(--btn-size);height:var(--btn-size);border-radius:50%;
+    background:var(--red);color:#fff;font-size:clamp(.95rem,4.5vmin,1.2rem);font-weight:bold;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;
+    box-shadow:0 4px 12px rgba(0,0,0,.3);transition:transform .12s;}
+  #spinBtn:active{transform:scale(.94);}
+
+  /* ========== FOGUEIRA & LANTERNAS (mesmo código visual de antes) ========= */
+  .bonfire{position:absolute;bottom:clamp(20px,5vh,60px);left:50%;transform:translateX(-50%);
+    width:var(--fire-w);height:calc(var(--fire-w)*1.3);pointer-events:none;z-index:1;}
+  .log{position:absolute;bottom:10px;width:var(--fire-w);height:var(--log-h);background:#5c3d1b;border-radius:12px;box-shadow:inset 0 0 4px rgba(0,0,0,.4);}
+  .log.left{transform:rotate(-25deg);} .log.right{transform:rotate(25deg);}
+  .flame{position:absolute;bottom:calc(var(--log-h) + 6px);left:50%;transform:translateX(-50%);
+    width:var(--flame-w);height:var(--flame-h);
+    background:radial-gradient(circle at 50% 60%,#ffbf00 0%,#ff6600 60%,#cc3300 100%);
+    border-radius:50% 50% 50% 50%/60% 60% 40% 40%;mix-blend-mode:screen;animation:flicker .8s ease-in-out infinite alternate;}
+  .flame:nth-child(3){width:calc(var(--flame-w)*0.7);height:calc(var(--flame-h)*0.7);
+    bottom:calc(var(--log-h) + 10px);animation-duration:.7s;animation-delay:-.4s;}
+  .flame:nth-child(4){width:calc(var(--flame-w)*0.55);height:calc(var(--flame-h)*0.55);
+    bottom:calc(var(--log-h) + 14px);animation-duration:.6s;animation-delay:-.2s;}
+  @keyframes flicker{from{transform:translateX(-50%) scaleY(.9);opacity:.95;}
+                     to  {transform:translateX(-50%) translateY(-6px) scaleY(1.05);opacity:1;}}
+  .lantern{position:absolute;bottom:-100px;width:clamp(24px,4.5vw,40px);height:clamp(36px,6.3vw,56px);
+    border-radius:50% 50% 40% 40%;background:radial-gradient(circle at 50% 30%,#ffb74d 0%,#ff6b00 80%);
+    box-shadow:0 0 clamp(6px,1vw,12px) 4px rgba(255,120,0,.4);animation:floatUp var(--time) linear infinite;
+    left:var(--x);pointer-events:none;}
+  .lantern::after{content:'';position:absolute;bottom:4px;left:50%;width:8px;height:8px;transform:translateX(-50%);background:#fff8aa;border-radius:50%;}
+  @keyframes floatUp{from{transform:translateY(0) scale(.9);opacity:0;}10%{opacity:1;}to{transform:translateY(-120vh) scale(1.1);opacity:0;}}
+</style>
 </head>
 
 <body>
+  <!-- BANDEIRINHAS -->
   <ul class="flags" id="flags"></ul>
 
+  <!-- ROLETA -->
   <div class="wheel-container">
     <div class="pointer"></div>
     <div id="wheel">
@@ -135,27 +129,33 @@
     </div>
   </div>
 
-  <div class="history-box">
+  <!-- HISTÓRICO -->
+  <div class="box left">
     <h3>Frases sorteadas</h3>
     <ul id="historyList"></ul>
     <button id="undoBtn" disabled>Apagar última</button>
   </div>
 
+  <!-- GABARITO (botão e, depois, lista) -->
+  <div class="box right" id="gabaritoBox">
+    <h3 style="display:none;">Gabarito</h3>
+    <ul id="gabaritoList" style="display:none;"></ul>
+    <button id="gabaritoBtn" disabled>Gabarito</button>
+  </div>
+
+  <!-- FOGUEIRA -->
   <div class="bonfire">
     <div class="log left"></div><div class="log right"></div>
     <div class="flame"></div><div class="flame"></div><div class="flame"></div>
   </div>
 
   <script>
-    /* Bandeirinhas dinâmicas */
-    (()=>{const cores=['#ff6b6b','#ffb74d','#ffe66d','#9acd32','#4ecdc4','#1a96ff','#7d5fff','#ff6bcb','#ff9ff3','#ff4d94'];
+    /* ===== bandeirinhas & lanternas ===== */
+    (()=>{const c=['#ff6b6b','#ffb74d','#ffe66d','#9acd32','#4ecdc4','#1a96ff','#7d5fff','#ff6bcb','#ff9ff3','#ff4d94'];
       const ul=document.getElementById('flags');
-      for(let i=0;i<18;i++){const li=document.createElement('li');li.style.setProperty('--n',i);li.style.setProperty('--clr',cores[i%cores.length]);ul.appendChild(li);}
-    })();
-
-    /* Lanternas */
-    (()=>{for(let i=0;i<6;i++){const l=document.createElement('div');l.className='lantern';
-      l.style.setProperty('--x',Math.random()*100+'vw');l.style.setProperty('--time',(8+Math.random()*5)+'s');document.body.appendChild(l);}
+      for(let i=0;i<18;i++){const li=document.createElement('li');li.style.setProperty('--n',i);li.style.setProperty('--clr',c[i%10]);ul.appendChild(li);}
+      for(let i=0;i<6;i++){const d=document.createElement('div');d.className='lantern';
+        d.style.setProperty('--x',Math.random()*100+'vw');d.style.setProperty('--time',(8+Math.random()*5)+'s');document.body.appendChild(d);}
     })();
 
     (()=>{
@@ -172,50 +172,84 @@
         "Sem cláusula de reajuste, a empresa pode ficar presa a valores defasados",
         "O jurídico é responsável por garantir que o contrato reflita o combinado comercial"
       ];
+      const verdicts=["VERDADEIRO","FALSO","VERDADEIRO","VERDADEIRO","VERDADEIRO",
+                      "FALSO","FALSO","VERDADEIRO","VERDADEIRO","VERDADEIRO"];
 
+      /* ---------- elementos ---------- */
       const wheel=document.getElementById('wheel');
-      const btn=document.getElementById('spinBtn');
-      const undo=document.getElementById('undoBtn');
-      const list=document.getElementById('historyList');
+      const btnSpin=document.getElementById('spinBtn');
+      const undoBtn=document.getElementById('undoBtn');
+      const gabBtn=document.getElementById('gabaritoBtn');
+      const histList=document.getElementById('historyList');
+      const gabHeader=document.querySelector('#gabaritoBox h3');
+      const gabList=document.getElementById('gabaritoList');
 
-      const LS_H='phraseHistory',LS_R='remainingIdx';
-      const hist=JSON.parse(localStorage.getItem(LS_H)||'[]');
-      let remain=JSON.parse(localStorage.getItem(LS_R)||'[]');
+      /* ---------- storage ---------- */
+      const LS_H='phrHist', LS_R='remainIdx';
+      const hist = JSON.parse(localStorage.getItem(LS_H)||'[]');
+      let remain = JSON.parse(localStorage.getItem(LS_R)||'[]');
       if(!remain.length) remain=Array.from({length:10},(_,i)=>i);
 
       const save=()=>{localStorage.setItem(LS_H,JSON.stringify(hist));localStorage.setItem(LS_R,JSON.stringify(remain));};
-      const render=()=>{list.innerHTML='';hist.forEach(t=>{const li=document.createElement('li');li.textContent=t;list.appendChild(li);});undo.disabled=!hist.length;};
-      render();
 
-      const seg=36,off=18;
-      let current=0,spinning=false;
+      /* ---------- render histórico & botão ---------- */
+      const renderHist=()=>{
+        histList.innerHTML='';
+        hist.forEach(t=>{const li=document.createElement('li');li.textContent=t;histList.appendChild(li);});
+        undoBtn.disabled=!hist.length;
+        const ready=hist.length>=5;
+        gabBtn.disabled=!ready;
+      };
+      renderHist();
 
-      btn.addEventListener('click',()=>{
+      /* monta gabarito fixo */
+      (()=>{for(let i=0;i<10;i++){
+        const li=document.createElement('li');
+        li.innerHTML=`${i+1}. ${phrases[i]}. <span class="${verdicts[i]==='VERDADEIRO'?'verdadeiro':'falso'}">${verdicts[i]}</span>`;
+        gabList.appendChild(li);
+      }})();
 
-        if(spinning) return;
+      /* ---------- roleta ---------- */
+      const seg=36;let current=0,spinning=false;
+
+      btnSpin.addEventListener('click',()=>{
+        if(spinning)return;
         if(!remain.length) remain=Array.from({length:10},(_,i)=>i);
 
         spinning=true;
-        const idx=remain.splice(Math.floor(Math.random()*remain.length),1)[0];save();
+        const idx=remain.splice(Math.floor(Math.random()*remain.length),1)[0];
+        save();
 
-        const base=idx*seg+off;const mod=current%360;let delta=base-mod;if(delta<0)delta+=360;
-        current+=360*6+delta;wheel.style.transform=`rotate(${current}deg)`;
+        const target=(270-idx*seg+360)%360;
+        const mod=current%360;
+        const delta=(target-mod+360)%360;
+        current+=360*6+delta;
+        wheel.style.transform=`rotate(${current}deg)`;
 
         const delay=parseFloat(getComputedStyle(wheel).getPropertyValue('--transition-time'))*1000;
         setTimeout(()=>{
-          hist.push(phrases[idx]);save();render();
-
-          /* reset transição para próximo clique */
+          hist.push(`${idx+1} – ${phrases[idx]}`);save();renderHist();
           current%=360;wheel.style.transition='none';wheel.style.transform=`rotate(${current}deg)`;wheel.offsetWidth;wheel.style.transition='';
           spinning=false;
         },delay);
       });
 
-      undo.addEventListener('click',()=>{
-        if(!hist.length) return;
-        const last=hist.pop();const idx=phrases.indexOf(last);
+      undoBtn.addEventListener('click',()=>{
+        if(!hist.length)return;
+        const last=hist.pop();const idx=parseInt(last)-1;
         if(!remain.includes(idx)) remain.push(idx);
-        save();render();
+        save();renderHist();
+      });
+
+      /* ---------- gabarito toggle ---------- */
+      let gabOpen=false;
+      gabBtn.addEventListener('click',()=>{
+        if(gabBtn.disabled) return;
+        gabOpen=!gabOpen;
+        gabHeader.style.display=gabOpen?'block':'none';
+        gabList.style.display=gabOpen?'block':'none';
+        gabBtn.textContent=gabOpen?'Fechar':'Gabarito';
+        gabBtn.style.background=gabOpen?'var(--red)':'var(--green)';
       });
 
     })();
